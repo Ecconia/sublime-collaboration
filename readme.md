@@ -24,5 +24,4 @@ If you're just testing this out, first toggle on your local server and connect t
 If you find something that creates an error or doesn't seem to be working properly, please make a GitHub issue about it. There are bound to be errors that I don't catch, so any feedback would be appreciated!
 
 #### SSL
-Added some SSL framework, you need to set the path to the server.crt in collab/connection.py line 72.
-Should be an absolute path.
+Added some SSL framework, you need to add a server.crt file provided by the server, in the Collaboration folder.

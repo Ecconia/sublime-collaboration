@@ -1,4 +1,10 @@
 import json, threading, socket, base64, hashlib, logging, sys, ssl
+from os.path import join
+
+try:
+    import sublime
+except ImportError:
+    pass
 
 logger = logging.getLogger('Sublime Collaboration')
 #Temp activate the DEBUG logging
@@ -69,7 +75,7 @@ class ClientSocket(threading.Thread):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock = ssl.wrap_socket(self.sock, ssl_version=ssl.PROTOCOL_TLSv1,
                                         cert_reqs = ssl.CERT_REQUIRED,
-                                        ca_certs="server.crt", ciphers="RC4-SHA")
+                                        ca_certs=join(sublime.packages_path(), "Collaboration/server.crt"), ciphers="RC4-SHA")
         try:
             self.sock.connect((self.host, self.port))
         except:
