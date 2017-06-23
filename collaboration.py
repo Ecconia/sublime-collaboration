@@ -1,4 +1,4 @@
-import sublime, sublime_plugin, logging
+import sublime, sublime_plugin, logging, os
 
 # intitialize logging
 logger = logging.getLogger('Sublime Collaboration')
@@ -333,7 +333,7 @@ class CollabAddCurrentDocumentCommand(sublime_plugin.ApplicationCommand, Sublime
         view = sublime.active_window().active_view()
         if view == None: return
         if view.id() in (editor.view.id() for editor in editors.values()): return
-        sublime.active_window().show_input_panel("Enter new document name:", view.name(), self.add_current, None, None)
+        sublime.active_window().show_input_panel("Enter new document name:", os.path.split(sublime.active_window().active_view().file_name())[1], self.add_current, None, None)
     def is_enabled(self):
         global client
         return bool(client)
