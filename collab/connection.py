@@ -1,6 +1,16 @@
-import json, threading, socket, base64, hashlib, logging, sys
+import json, threading, socket, base64, hashlib, logging, sys, ssl
 
 logger = logging.getLogger('Sublime Collaboration')
+#Temp activate the DEBUG logging
+logger.setLevel(logging.DEBUG)
+
+loggerhandler = logging.StreamHandler()
+loggerhandler.setLevel(logging.NOTSET)
+
+loggerformatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+loggerhandler.setFormatter(loggerformatter)
+
+logger.addHandler(loggerhandler)
 
 #A pretty terrible hacky framing system, I'll need to come up with a better one soon
 def send_msg(sock, msg):
@@ -57,6 +67,9 @@ class ClientSocket(threading.Thread):
 
     def run(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sock = ssl.wrap_socket(self.sock, ssl_version=ssl.PROTOCOL_TLSv1,
+                                        cert_reqs = ssl.CERT_REQUIRED,
+                                        ca_certs="server.crt", ciphers="RC4-SHA")
         try:
             self.sock.connect((self.host, self.port))
         except:
@@ -217,6 +230,10 @@ class SocketServer:
             except OSError:
                 break
             logger.debug('Server was connected by {0}'.format(addr))
+            conn = ssl.wrap_socket(conn, server_side=True,
+                                ssl_version=ssl.PROTOCOL_TLSv1, ciphers="RC4-SHA",
+                                certfile="server.crt", 
+                                keyfile="server.key")
             connection = ServerSocket(conn, addr)
             self.connections.append(connection)
             def on_close():
